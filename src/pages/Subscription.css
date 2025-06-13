@@ -1,0 +1,138 @@
+.subscription-page {
+  padding: 20px;
+  text-align: center;
+}
+
+.subscription-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.subscription-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.pricing-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  max-width: 400px;
+  margin: 0 auto 32px;
+}
+
+.plan-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.plan-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #10a37f;
+  margin-bottom: 24px;
+}
+
+.plan-price span {
+  font-size: 1rem;
+  color: #666;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.features-list li {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 24px;
+}
+
+.features-list li::before {
+  content: '✓';
+  color: #10a37f;
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.subscribe-button {
+  background-color: #10a37f;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.subscribe-button:hover {
+  background-color: #0d8c68;
+}
+
+.cancel-note {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 16px;
+}
+
+.faq-section {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.faq-section h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.faq-item {
+  margin-bottom: 24px;
+}
+
+.faq-item h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.faq-item p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .subscription-title {
+    font-size: 2rem;
+  }
+  .subscription-subtitle {
+    font-size: 1rem;
+  }
+  .pricing-card {
+    padding: 16px;
+  }
+  .plan-title {
+    font-size: 1.5rem;
+  }
+  .plan-price {
+    font-size: 1.8rem;
+  }
+}
