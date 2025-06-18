@@ -43,6 +43,7 @@
   --footer-text: #b0b0b0;
 }
 
+
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -61,6 +62,10 @@ body {
   color: var(--text-secondary);
   font-style: italic;
   font-size: 15px;
+}
+
+.navlink {
+  text-decoration: none;
 }
 
 .thinking span {
@@ -157,16 +162,13 @@ body {
 }
 
 .chat-bubble-ai {
-  background-color: var(--ai-bubble-bg);
+  background-color: transparent;
   color: var(--ai-bubble-text);
-  border-radius: 16px 16px 16px 0;
-  padding: 0px 10px;
   max-width: 70%;
   align-self: flex-start;
   margin: 8px;
-  box-shadow: 0 1px 2px var(--ai-bubble-shadow);
   animation: fadeInAi 0.3s ease-in-out;
-  padding-top: 10px;
+  border: none;
 }
 
 @keyframes fadeIn {
@@ -206,11 +208,12 @@ body {
   cursor: pointer;
   box-shadow: none;
   border: none;
+  color: (var(--ai-bubble-text));
+  font-style: bold;
   transition: background-color 0.3s, color 0.3s, transform 0.2s;
 }
 
 .action-button:hover {
-  background-color: var(--button-bg);
   color: var(--user-bubble-text);
   transform: scale(1.05);
 }
@@ -225,24 +228,11 @@ body {
   animation: blink 0.5s step-end infinite;
   color: var(--text-primary);
 }
-.theme-toggle-button {
-  background-color: var(--button-bg);
-  color: var(--user-bubble-text);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px var(--header-shadow);
-  transition: background-color 0.3s, transform 0.2s;
-}
+
 
 .clear-btn {
-  background-color: var(--button-bg);
-  color: var(--user-bubble-text);
+  background-color: transparent;
+  color: silver;
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
@@ -253,7 +243,6 @@ body {
 }
 
 .clear-btn:hover {
-  background-color: var(--button-hover-bg);
   transform: scale(1.05);
 }
 
@@ -278,25 +267,24 @@ body {
 }
 
 .input-area {
-  padding: 16px;
+  padding: 0px 15px 30px ;
   background-color: var(--input-bg);
-  box-shadow: 1px 10px 20px var(--input-box-shadow);
   display: flex;
   align-items: center;
   position: fixed;
-  bottom: 70px;
+  bottom: 40px;
   width: 44%;
-  border-radius: 8px;
+  height: 60px;
+  border-radius: 25px;
 }
 
 .chat-input {
   flex: 1;
-  padding: 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 8px 0 0 8px;
+  padding: 0px 2px 15px;
+  border: none;
   font-size: 1rem;
   outline: none;
-  background-color: var(--input-bg);
+  background-color: transparent;
   color: var(--text-primary);
 }
 
@@ -306,12 +294,11 @@ body {
 }
 
 .send-button {
-  padding: 12px 16px;
+  padding: 10px 10px;
   background-color: var(--button-bg);
   color: var(--user-bubble-text);
   border: none;
-  border-radius: 0 8px 8px 0;
-  font-size: 1rem;
+  border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -320,19 +307,17 @@ body {
   background-color: var(--button-hover-bg);
 }
 
-.footer {
-  background-color: var(--footer-bg);
-  color: var(--footer-text);
-  padding: 12px;
-  text-align: center;
-  font-size: 0.9rem;
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-}
-
 /* for phonr */
+.infocha {
+  text-align: center;
+  color: rgb(173, 173, 173);
+  font-size: small;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-weight: 400;
+  position: fixed;
+  bottom: 3px;
+  left: 40%;
+}
 
 @media screen and (max-width: 768px) {
   body {
@@ -390,7 +375,7 @@ body {
     padding: 13px 12px;
   }
 
-  .footer {
+  .infocha {
     display: none;
   }
 
