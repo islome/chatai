@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Subscription.css";
+import { useNavigate } from "react-router-dom";
 
 function Subscription() {
   const [theme, setTheme] = useState("light");
   const [input, setInput] = useState("");
   const textareaRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
@@ -41,9 +43,28 @@ function Subscription() {
     }
   };
 
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+
+  // Handle send logic
+  const handleSend = () => {
+    if (input.trim() === "") return;
+    console.log("Message sent:", input); // Replace with your send logic
+    setInput("");
+    setShowModal(true);
+  };
+
+  // Close modal after 2 seconds
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => setShowModal(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
+
   return (
     <div className="subscription-page">
-      <button className="back-button" onClick={() => window.history.back()}>
+      <button className="back-button" onClick={() => navigate("/chat")}>
         ← Back
       </button>
       <h1 className="subscription-title">Unlock the Pro version of ChatBro</h1>
@@ -80,14 +101,19 @@ function Subscription() {
         />
         <button
           className="send-button"
-          onClick={() => {
-            console.log("Message sent:", input); // Replace with your send logic
-            setInput("");
-          }}
+          onClick={handleSend}
         >
           Send
         </button>
       </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <p>Your question was sent successfully! ✅</p>
+          </div>
+        </div>
+      )}
 
       <div className="faq-section">
         <h2>Frequently Asked Questions</h2>
