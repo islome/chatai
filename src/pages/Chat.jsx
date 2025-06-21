@@ -14,11 +14,11 @@ function Chat() {
   const [showTooltip, setShowTooltip] = useState({});
   const [showCopyTooltip, setShowCopyTooltip] = useState({});
   const messagesEndRef = useRef(null);
-  const textareaRef = useRef(null);
+  const textareaRef = useRef("");
 
   useEffect(() => {
     const textarea = textareaRef.current;
-    textarea.style.height = 'auto'; // Reset height
+    textarea.style.height = "auto"; // Reset height
     textarea.style.height = `${textarea.scrollHeight}px`; // Set to content height
   }, [input]);
 
@@ -33,7 +33,10 @@ function Chat() {
 
     // Agar theme systemda o‘zgarsa, saytga ham o‘zgartirish
     const handleChange = (e) => {
-      document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+      document.documentElement.setAttribute(
+        "data-theme",
+        e.matches ? "dark" : "light"
+      );
     };
 
     systemTheme.addEventListener("change", handleChange);
@@ -442,7 +445,9 @@ function Chat() {
             ...prev,
             {
               id: prev.length + 1,
-              text: `Yo, what's up ${userName || "bro"}! How are you doing. What can I help with?`,
+              text: `Yo, what's up ${
+                userName || "bro"
+              }! How are you doing. What can I help with?`,
               isUser: false,
             },
           ]);
@@ -822,9 +827,9 @@ function Chat() {
       <header className="header">
         <div className="logo">Chat with {userName || "Bro"}</div>
         <nav>
-            <div className="navlink">
-                <Link to={"/price"} >Pricing</Link>
-            </div>
+          <div className="navlink">
+            <Link to={"/price"}>Pricing</Link>
+          </div>
         </nav>
       </header>
 
@@ -939,17 +944,18 @@ function Chat() {
             🧲
           </button>
         </div>
-        <div className="input-area">
+        <div className="input-orqasi">
+          <div className="input-area">
           <textarea
-      ref={textareaRef}
-      value={input}
-      maxLength={250}
-      rows={1}
-      onChange={(e) => setInput(e.target.value)}
-      onKeyPress={handleKeyPress}
-      placeholder="Ask something"
-      className="chat-input"
-    />
+            ref={textareaRef}
+            value={input}
+            maxLength={250}
+            rows={1}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyPress}
+            placeholder="Ask something"
+            className="chat-input"
+          />
           <button
             onClick={() => setInput("")}
             className="clear-btn"
@@ -969,6 +975,7 @@ function Chat() {
               <path d="M8.99992 16V6.41407L5.70696 9.70704C5.31643 10.0976 4.68342 10.0976 4.29289 9.70704C3.90237 9.31652 3.90237 8.6835 4.29289 8.29298L9.29289 3.29298L9.36907 3.22462C9.76184 2.90427 10.3408 2.92686 10.707 3.29298L15.707 8.29298L15.7753 8.36915C16.0957 8.76192 16.0731 9.34092 15.707 9.70704C15.3408 10.0732 14.7618 10.0958 14.3691 9.7754L14.2929 9.70704L10.9999 6.41407V16C10.9999 16.5523 10.5522 17 9.99992 17C9.44764 17 8.99992 16.5523 8.99992 16Z"></path>
             </svg>
           </button>
+        </div>
         </div>
       </main>
       <div className="infocha">

@@ -231,6 +231,7 @@
 .chat-input-container {
   max-width: 600px;
   margin: 0 auto 40px;
+  width: 70%;
   display: flex;
   gap: 12px;
 }
