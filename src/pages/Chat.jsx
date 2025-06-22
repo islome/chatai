@@ -179,7 +179,39 @@ function Chat() {
         setIsThinking(false);
         return;
       }
-
+      if (/what is the most expensive car|most expensive car in the world/i.test(input)) {
+        try {
+          const pageTitle = "List of most expensive cars sold at auction";
+          const response = await fetch(
+            `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&titles=${encodeURIComponent(pageTitle)}&format=json&exintro=1&origin=*`
+          );
+          const data = await response.json();
+          const pages = data.query?.pages || {};
+          const page = Object.values(pages)[0];
+          let extract = page?.extract || "Sorry, I couldn't fetch the info right now.";
+          // Remove HTML tags for cleaner output
+          extract = extract.replace(/<[^>]+>/g, "");
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: extract.length > 600 ? extract.slice(0, 600) + "..." : extract,
+              isUser: false,
+            },
+          ]);
+        } catch (error) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: "Sorry, I couldn't fetch the most expensive car info right now.",
+              isUser: false,
+            },
+          ]);
+        }
+        setIsThinking(false);
+        return;
+      }
       if (/tell me a fact/i.test(input)) {
         const response = await fetch("https://api.api-ninjas.com/v1/facts", {
           headers: { "X-Api-Key": "vbLr0fFwvqwW6Wlt9nOgJg==ZI8YGcjLH56Ad6Vq" },
@@ -199,7 +231,223 @@ function Chat() {
         setIsThinking(false);
         return;
       }
-
+      if (/what is a (\w+)/i.test(input)) {
+        const word = input.match(/what is a (\w+)/i)[1];
+        try {
+          const response = await fetch(
+            `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`
+          );
+          const data = await response.json();
+          if (Array.isArray(data) && data[0]?.meanings?.[0]?.definitions?.[0]?.definition) {
+            const definition = data[0].meanings[0].definitions[0].definition;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: `A ${word} is: ${definition}`,
+                isUser: false,
+              },
+            ]);
+          } else {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: `Sorry, I couldn't find a definition for "${word}".`,
+                isUser: false,
+              },
+            ]);
+          }
+        } catch (error) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: "Sorry, something went wrong while fetching the definition.",
+              isUser: false,
+            },
+          ]);
+        }
+        setIsThinking(false);
+        return;
+      }
+      if (/weather in ([\w\s]+)/i.test(input)) {
+        const city = input.match(/weather in ([\w\s]+)/i)[1].trim();
+        try {
+          const geoRes = await fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`
+          );
+          const geoData = await geoRes.json();
+          if (!geoData.results || geoData.results.length === 0) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: `Sorry, I couldn't find the location "${city}".`,
+                isUser: false,
+              },
+            ]);
+            setIsThinking(false);
+            return;
+          }
+          const { latitude, longitude, name, country } = geoData.results[0];
+          const weatherRes = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+          );
+          const weatherData = await weatherRes.json();
+          if (!weatherData.current_weather) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: `Sorry, I couldn't get the weather for "${city}".`,
+                isUser: false,
+              },
+            ]);
+            setIsThinking(false);
+            return;
+          }
+          const { temperature, weathercode, windspeed } = weatherData.current_weather;
+          const weatherDescriptions = {
+            0: "Clear sky",
+            1: "Mainly clear",
+            2: "Partly cloudy",
+            3: "Overcast",
+            45: "Fog",
+            48: "Depositing rime fog",
+            51: "Light drizzle",
+            53: "Drizzle",
+            55: "Dense drizzle",
+            56: "Light freezing drizzle",
+            57: "Freezing drizzle",
+            61: "Slight rain",
+            63: "Rain",
+            65: "Heavy rain",
+            66: "Light freezing rain",
+            67: "Freezing rain",
+            71: "Slight snow fall",
+            73: "Snow fall",
+            75: "Heavy snow fall",
+            77: "Snow grains",
+            80: "Slight rain showers",
+            81: "Rain showers",
+            82: "Violent rain showers",
+            85: "Slight snow showers",
+            86: "Heavy snow showers",
+            95: "Thunderstorm",
+            96: "Thunderstorm with slight hail",
+            99: "Thunderstorm with heavy hail",
+          };
+          const description = weatherDescriptions[weathercode] || "Unknown";
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: `Weather in ${name}, ${country}: ${description}, ${temperature}°C, wind speed ${windspeed} km/h.`,
+              isUser: false,
+            },
+          ]);
+        } catch (error) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: "Sorry, I couldn't fetch the weather right now.",
+              isUser: false,
+            },
+          ]);
+        }
+        setIsThinking(false);
+        return;
+      }
+      if (/tell me about ([\w\s]+)/i.test(input)) {
+        const personName = input.match(/tell me about ([\w\s]+)/i)[1].trim();
+        try {
+          const response = await fetch(
+            `https://api.api-ninjas.com/v1/celebrity?name=${encodeURIComponent(personName)}`,
+            {
+              headers: { "X-Api-Key": "vbLr0fFwvqwW6Wlt9nOgJg==ZI8YGcjLH56Ad6Vq" },
+            }
+          );
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const celeb = data[0];
+            let info = `${celeb.name} is a ${celeb.occupation || "celebrity"}`;
+            if (celeb.net_worth) info += `, net worth: $${celeb.net_worth}`;
+            info += `, nationality: ${celeb.nationality.toUpperCase()}`;
+            if (celeb.birthday) info += `, born: ${celeb.birthday}`;
+            info += `, gender: ${celeb.gender.toUpperCase()}`;
+            setMessages((prev) => [
+              ...prev,
+              { id: prev.length + 1, text: info + ".", isUser: false },
+            ]);
+          } else {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: `Sorry, I couldn't find info about "${personName}".`,
+                isUser: false,
+              },
+            ]);
+          }
+        } catch (error) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: "Sorry, something went wrong while fetching the celebrity info.",
+              isUser: false,
+            },
+          ]);
+        }
+        setIsThinking(false);
+        return;
+      }
+      if (/who is ([\w\s]+)/i.test(input)) {
+        const actorName = input.match(/who is ([\w\s]+)/i)[1].trim();
+        try {
+          const response = await fetch(
+            `https://api.api-ninjas.com/v1/celebrity?name=${encodeURIComponent(actorName)}`,
+            {
+              headers: { "X-Api-Key": "vbLr0fFwvqwW6Wlt9nOgJg==ZI8YGcjLH56Ad6Vq" },
+            }
+          );
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const celeb = data[0];
+            let info = `${celeb.name} is a ${celeb.occupation || "celebrity"}`;
+            if (celeb.net_worth) info += `, net worth: $${celeb.net_worth}`;
+            info += `, nationality: ${celeb.nationality.toUpperCase()}`;
+            if (celeb.birthday) info += `, born: ${celeb.birthday}`;
+            info += `, gender: ${celeb.gender.toUpperCase()}`;
+            setMessages((prev) => [
+              ...prev,
+              { id: prev.length + 1, text: info + ".", isUser: false },
+            ]);
+          } else {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: `Sorry, I couldn't find info about "${actorName}".`,
+                isUser: false,
+              },
+            ]);
+          }
+        } catch (error) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              text: "Sorry, something went wrong while fetching the celebrity info.",
+              isUser: false,
+            },
+          ]);
+        }
+        setIsThinking(false);
+        return;
+      }
       if (
         /what is the bitcoin price|bitcoin price|hozir bitcoin narxi qancha/i.test(
           input
@@ -225,6 +473,11 @@ function Chat() {
           "That's interesting, tell me more.",
           "Let me think about that for a moment.",
           "What do you mean by that?",
+          "Could you clarify your question?",
+          "I'm not sure I understand, can you explain?",
+          "That's a good question, let me see.",
+          "I need a moment to process that.",
+          "Hmm, that's a tough one. Let me think.",
         ];
 
         const savedName = localStorage.getItem("userName");
@@ -285,7 +538,7 @@ function Chat() {
           setIsThinking(false);
           return;
         }
-        if (/what is the time/i.test(input)) {
+        if (/what is the time|current time|time| hozirgi vaqt|soat nechi buldi/i.test(input)) {
           const currentTime = new Date().toLocaleTimeString();
           setMessages((prev) => [
             ...prev,
@@ -298,7 +551,7 @@ function Chat() {
           setIsThinking(false);
           return;
         }
-        if (/what is the date/i.test(input)) {
+        if (/what is the date|current date| bugungi kun/i.test(input)) {
           const currentDate = new Date().toLocaleDateString();
           setMessages((prev) => [
             ...prev,
@@ -372,6 +625,7 @@ function Chat() {
           setIsThinking(false);
           return;
         }
+        
         if (
           /I'm not in mood|yaxshi emas|I'm sad|very bad|not good/i.test(input)
         ) {
@@ -481,7 +735,7 @@ function Chat() {
         if (/what is the weather/i.test(input)) {
           const weatherResponses = [
             "Looks sunny in the digital realm! What's the weather like where you are?",
-            "I’d say it’s partly cloudy with a chance of fun chats. How’s your weather?",
+            "I'd say it's partly cloudy with a chance of fun chats. How's your weather?",
             "No rain here, just clear skies for chatting! What's it like outside for you?",
           ];
           const randomWeather =
@@ -514,7 +768,7 @@ function Chat() {
               ...prev,
               {
                 id: prev.length + 1,
-                text: "Sorry, I couldn’t calculate that. Make sure your expression is valid, like 'calculate (5 + 3) * 2'.",
+                text: "Sorry, I couldn't calculate that. Make sure your expression is valid, like 'calculate (5 + 3) * 2'.",
                 isUser: false,
               },
             ]);
@@ -522,11 +776,62 @@ function Chat() {
           setIsThinking(false);
           return;
         }
+        if (/what is the capital of (\w+)/i.test(input)) {
+          const countryName = input.match(/what is the capital of (\w+)/i)[1];
+          try {
+            fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}`)
+              .then(res => res.json())
+              .then(data => {
+                if (Array.isArray(data) && data[0]?.capital?.[0]) {
+                  setMessages(prev => [
+                    ...prev,
+                    {
+                      id: prev.length + 1,
+                      text: `The capital of ${countryName} is ${data[0].capital[0]}.`,
+                      isUser: false,
+                    },
+                  ]);
+                } else {
+                  setMessages(prev => [
+                    ...prev,
+                    {
+                      id: prev.length + 1,
+                      text: `Sorry, I couldn't find the capital for "${countryName}".`,
+                      isUser: false,
+                    },
+                  ]);
+                }
+                setIsThinking(false);
+              })
+              .catch(() => {
+                setMessages(prev => [
+                  ...prev,
+                  {
+                    id: prev.length + 1,
+                    text: "Sorry, something went wrong while fetching the capital.",
+                    isUser: false,
+                  },
+                ]);
+                setIsThinking(false);
+              });
+          } catch {
+            setMessages(prev => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                text: "Sorry, something went wrong while fetching the capital.",
+                isUser: false,
+              },
+            ]);
+            setIsThinking(false);
+          }
+          return;
+        }
         if (/(great|awesome|amazing|cool)/i.test(input)) {
           const compliments = [
-            "You’re absolutely killing it, bro!",
-            "That’s the spirit! You’re awesome!",
-            "Wow, you’re bringing the good vibes!",
+            "You're absolutely killing it, bro!",
+            "That's the spirit! You're awesome!",
+            "Wow, you're bringing the good vibes!",
           ];
           const randomCompliment =
             compliments[Math.floor(Math.random() * compliments.length)];
@@ -715,9 +1020,9 @@ function Chat() {
         }
         if (/(i'?m sad|i'?m feeling down)/i.test(input)) {
           const encouragements = [
-            "I’m here for you, bro. Wanna share what’s on your mind?",
+            "I'm here for you, bro. Wanna share what's on your mind?",
             "Sorry to hear that. How about a joke to cheer you up? Just say 'tell me a joke'!",
-            "It’s okay to feel down sometimes. I’m all ears if you want to talk!",
+            "It's okay to feel down sometimes. I'm all ears if you want to talk!",
           ];
           const randomEncouragement =
             encouragements[Math.floor(Math.random() * encouragements.length)];
@@ -946,36 +1251,36 @@ function Chat() {
         </div>
         <div className="input-orqasi">
           <div className="input-area">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            maxLength={250}
-            rows={1}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Ask something"
-            className="chat-input"
-          />
-          <button
-            onClick={() => setInput("")}
-            className="clear-btn"
-            title="Clear input"
-          >
-            ✕
-          </button>
-          <button onClick={handleSend} className="send-button">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-              className="icon"
+            <textarea
+              ref={textareaRef}
+              value={input}
+              maxLength={250}
+              rows={1}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Ask something"
+              className="chat-input"
+            />
+            <button
+              onClick={() => setInput("")}
+              className="clear-btn"
+              title="Clear input"
             >
-              <path d="M8.99992 16V6.41407L5.70696 9.70704C5.31643 10.0976 4.68342 10.0976 4.29289 9.70704C3.90237 9.31652 3.90237 8.6835 4.29289 8.29298L9.29289 3.29298L9.36907 3.22462C9.76184 2.90427 10.3408 2.92686 10.707 3.29298L15.707 8.29298L15.7753 8.36915C16.0957 8.76192 16.0731 9.34092 15.707 9.70704C15.3408 10.0732 14.7618 10.0958 14.3691 9.7754L14.2929 9.70704L10.9999 6.41407V16C10.9999 16.5523 10.5522 17 9.99992 17C9.44764 17 8.99992 16.5523 8.99992 16Z"></path>
-            </svg>
-          </button>
-        </div>
+              ✕
+            </button>
+            <button onClick={handleSend} className="send-button">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon"
+              >
+                <path d="M8.99992 16V6.41407L5.70696 9.70704C5.31643 10.0976 4.68342 10.0976 4.29289 9.70704C3.90237 9.31652 3.90237 8.6835 4.29289 8.29298L9.29289 3.29298L9.36907 3.22462C9.76184 2.90427 10.3408 2.92686 10.707 3.29298L15.707 8.29298L15.7753 8.36915C16.0957 8.76192 16.0731 9.34092 15.707 9.70704C15.3408 10.0732 14.7618 10.0958 14.3691 9.7754L14.2929 9.70704L10.9999 6.41407V16C10.9999 16.5523 10.5522 17 9.99992 17C9.44764 17 8.99992 16.5523 8.99992 16Z"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </main>
       <div className="infocha">
