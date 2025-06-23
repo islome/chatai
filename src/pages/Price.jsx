@@ -38,23 +38,42 @@ function Subscription() {
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      console.log("Message sent:", input); // Replace with your send logic
+      console.log("Message sent:", input); 
       setInput("");
+      setShowModal(true);
     }
   };
 
-  // Modal state
   const [showModal, setShowModal] = useState(false);
 
-  // Handle send logic
   const handleSend = () => {
     if (input.trim() === "") return;
-    console.log("Message sent:", input); // Replace with your send logic
+    console.log("Message sent:", input); 
     setInput("");
     setShowModal(true);
   };
 
-  // Close modal after 2 seconds
+  const [proSuccess, setProSuccess] = useState(false);
+
+  const handleSubscribe = () => {
+    setProSuccess(true);
+    const btn = document.querySelector(".subscribe-button");
+    if (btn) {
+      btn.textContent = "Subscribed 🎉";
+      btn.disabled = true;
+      btn.classList.add("subscribed");
+    }
+    setTimeout(() => {
+      setProSuccess(false);
+      if (btn) {
+      btn.textContent = "Subscribe Now";
+      btn.disabled = false;
+      btn.classList.remove("subscribed");
+      }
+      navigate("/chat");
+    }, 2500);
+  };
+
   useEffect(() => {
     if (showModal) {
       const timer = setTimeout(() => setShowModal(false), 4000);
@@ -84,7 +103,7 @@ function Subscription() {
           <li>Exclusive Pro features (coming soon)</li>
           <li>Ad-free experience</li>
         </ul>
-        <button className="subscribe-button">Subscribe Now</button>
+        <button className="subscribe-button" onClick={handleSubscribe}>Subscribe Now</button>
         <p className="cancel-note">Cancel anytime. No long-term contracts.</p>
       </div>
 

@@ -1133,7 +1133,9 @@ function Chat() {
         <div className="logo">Chat with {userName || "Bro"}</div>
         <nav>
           <div className="navlink">
-            <Link to={"/price"}>Pricing</Link>
+            <Link to="/price" className="get-pro">
+              Get Pro
+            </Link>
           </div>
         </nav>
       </header>
